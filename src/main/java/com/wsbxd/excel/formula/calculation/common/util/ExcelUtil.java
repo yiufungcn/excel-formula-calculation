@@ -238,18 +238,19 @@ public class ExcelUtil {
      * @return 计算结果
      */
     public static String arithmeticCalculate(String formula, Map<String, String> cellAndValueMap) {
-        // cellAndValue.forEach(CALCULATE_ENGINE::put) 会使 cellAndValue.getValue()当成字符串计算
         for (Map.Entry<String, String> cellAndValue : cellAndValueMap.entrySet()) {
-            // 目前先把空作为0处理
             String value = cellAndValue.getValue();
             if (ExcelStrUtil.isBlank(value)) {
                 value = ExcelConstant.ZERO_STR;
             }
-            formula = formula.replace(cellAndValue.getKey(), value);
+
+            // 正则表达式确保单元格前后是运算符或者公式的边界
+            String cell = cellAndValue.getKey();
+            String regex = "(?<=^|[*/\\-+()])" + Pattern.quote(cell) + "(?=$|[*/\\-+()])";
+            formula = formula.replaceAll(regex, value);
         }
         return calculate(formula);
     }
-
 
     public static String calculate(String formula) {
         String result;
