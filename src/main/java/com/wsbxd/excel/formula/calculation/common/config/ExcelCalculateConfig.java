@@ -136,9 +136,9 @@ public class ExcelCalculateConfig {
         try {
             return (String) method.invoke(this.functionImpl, valueList);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            // 不打印日志
+            throw new ExcelException("函数调用失败，函数名称：" + functionName);
         }
-        throw new ExcelException("函数调用失败，函数名称：" + functionName);
     }
 
     /**

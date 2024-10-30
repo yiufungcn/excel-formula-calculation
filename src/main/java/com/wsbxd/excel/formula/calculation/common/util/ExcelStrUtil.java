@@ -210,4 +210,17 @@ public class ExcelStrUtil {
         return Character.isWhitespace(c) || Character.isSpaceChar(c) || c == '\ufeff' || c == '\u202a';
     }
 
+
+    /**
+     * 判断是否是公式
+     * @param formula
+     * @return
+     */
+    public static Boolean isFormula(String formula){
+        if(formula == null || formula.isEmpty()){
+            return false;
+        }
+        return formula.startsWith("=");
+    }
+
 }

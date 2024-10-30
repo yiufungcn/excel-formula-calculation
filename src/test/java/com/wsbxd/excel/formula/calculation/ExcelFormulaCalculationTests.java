@@ -148,4 +148,53 @@ class ExcelFormulaCalculationTests {
         System.out.println(result2);
     }
 
+    /**
+     * 测试单页复杂公式以及嵌套
+     */
+    @Test
+    public void sheetNumNestedFormulaTest() {
+        List<ExcelNumber> excelList = new ArrayList<>();
+        excelList.add(new ExcelNumber("1", "11", "22", "33", "11", "=SUM(A1:D1)", null, null, null, null, null, null, null, null, null, null, null, 1));
+        excelList.add(new ExcelNumber("2", "111", "222", "333", "111", "=SUM(A2+B2+C2+D2)", null, null, null, null, null, null, null, null, null, null, null, 2));
+        excelList.add(new ExcelNumber("3", "1.111", "2.222", "3.333", "9.999", "=SUM(A3:D3)", "=SUM(E2-E1)", null, null, null, null, null, null, null, null, null, null, 3));
+        excelList.add(new ExcelNumber("4", "-1111111111111111111111.111", "2222222222222222222222.222", "3333333333333333333333.333", "1111111111111111111111.111", "=SUM(A4+B4+C4+D4)", "=ABS(A4)", null, null, null, null, null, null, null, null, null, null, 4));
+        excelList.add(new ExcelNumber("5", "=SUM(A1:A4)", "=MAX(B1:B4)", "=IF(SUM(C1:C4) > SUM(D1:D4), SUM(D1:D4), SUM(C1:C4))", "=SUM(D1:D4)", "=ROUND(E4, 2)", "", null, null, null, null, null, null, null, null, null, null, 5));
+        System.out.println("-------------------------------------------------");
+        long start = System.currentTimeMillis();
+        SheetCalculate<ExcelNumber> sheetCalculate = new SheetCalculate<>(excelList, numberExcelCalculateConfig);
+
+        String A5 = sheetCalculate.calculate("A5");
+        String B5 = sheetCalculate.calculate("B5");
+        String C5 = sheetCalculate.calculate("C5");
+        String D5 = sheetCalculate.calculate("D5");
+        String E1 = sheetCalculate.calculate("E1");
+        String E2 = sheetCalculate.calculate("E2");
+        String E3 = sheetCalculate.calculate("E3");
+        String E4 = sheetCalculate.calculate("E4");
+        String E5 = sheetCalculate.calculate("E5");
+        String F3 = sheetCalculate.calculate("F3");
+        String F4 = sheetCalculate.calculate("F4");
+        String F5 = sheetCalculate.calculate("F5");
+
+
+        String F1 = sheetCalculate.calculate("F1=A1+ABS(MIN(C5,A1:C4)*2-MAX(A1:A4))+MAX(A1:D4)");
+
+        sheetCalculate.integrationResult();
+        System.out.println("耗时：" + (System.currentTimeMillis() - start) + "ms");
+        System.out.println("A5【=SUM(A1:A4)】:" + A5);
+        System.out.println("B5【=MAX(B1:B4)】:" + B5);
+        System.out.println("C5【=IF(SUM(C1:C4) > SUM(D1:D4), SUM(D1:D4), SUM(C1:C4))】:" + C5);
+        System.out.println("D5【=ROUND(SUM(E1:E4), 2)】:" + D5);
+        System.out.println("E1【=SUM(A1:D1)】:" + E1);
+        System.out.println("E2【=SUM(A2+B2+C2+D2)】:" + E2);
+        System.out.println("E3【=SUM(A3:D3)】:" + E3);
+        System.out.println("E4【=SUM(A4+B4+C4+D4)】:" + E4);
+        System.out.println("E5【=ROUND(E4, 2)】:" + E5);
+        System.out.println("F3【=SUM(E2-E1)】:" + F3);
+        System.out.println("F4【=ABS(A4)】:" + F4);
+        System.out.println("F5【=MIN(C5,A1:C4)】:" + F5);
+        System.out.println("F1【F1=A1+ABS(MIN(C5,A1:C4)*2-MAX(A1:A4))+MAX(A1:D4)】:" + F1);
+
+    }
+
 }
