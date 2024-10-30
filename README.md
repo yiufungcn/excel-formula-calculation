@@ -38,3 +38,6 @@ Java 1.8 仿 Excel 公式计算,目前有单行公式计算,单页签公式计�
 
 ## 多页签公式计算
 可在 [ExcelFormulaCalculationTests.java](src/test/java/com/wsbxd/excel/formula/calculation/ExcelFormulaCalculationTests.java) 121、138行找到对应案例
+
+## 公式预填以及公式嵌套
+可在 [ExcelFormulaCalculationTests.java](src/test/java/com/wsbxd/excel/formula/calculation/ExcelFormulaCalculationTests.java) 155行找到对应案例，该示例还测试了精度，能达到 **22** 位数字，达`万亿亿`
