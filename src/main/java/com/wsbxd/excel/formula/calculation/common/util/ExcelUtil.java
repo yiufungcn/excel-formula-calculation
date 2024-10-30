@@ -1,5 +1,8 @@
 package com.wsbxd.excel.formula.calculation.common.util;
 
+import com.googlecode.aviator.AviatorEvaluator;
+import com.googlecode.aviator.Expression;
+import com.googlecode.aviator.Options;
 import com.wsbxd.excel.formula.calculation.common.cell.enums.ExcelCellTypeEnum;
 import com.wsbxd.excel.formula.calculation.common.constant.ExcelConstant;
 import com.wsbxd.excel.formula.calculation.common.config.ExcelCalculateConfig;
@@ -8,6 +11,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * description: Excel 工具类
@@ -49,6 +54,10 @@ public class ExcelUtil {
     private static final int BAD_DATE = -1;
 
     public static final long DAY_MILLISECONDS = SECONDS_PER_DAY * 1000L;
+
+    static {
+        AviatorEvaluator.setOption(Options.ALWAYS_PARSE_FLOATING_POINT_NUMBER_INTO_DECIMAL, true);
+    }
 
     /**
      * 解析行内单元格类型
@@ -249,15 +258,9 @@ public class ExcelUtil {
             return formula;
         }
         //=必须处理成==才能判断是否相等
-        if (formula.contains(ExcelConstant.EQUALS_SIGN)) {
-            formula = formula.replace(ExcelConstant.EQUALS_SIGN, ExcelConstant.DOUBLE_EQUALS_SIGN);
-        }
-        try {
-            result = ExcelStrUtil.toString(CALCULATE_ENGINE.eval(formula));
-        } catch (ScriptException e) {
-            e.printStackTrace();
-            return formula;
-        }
+        formula = replaceEqualSign(formula);
+        Expression expression = AviatorEvaluator.compile(formula);
+        result = ExcelStrUtil.toString(expression.execute());
         // boolean 处理
         if (ExcelConstant.LOWER_CASE_TRUE.equals(result)) {
             result = ExcelConstant.BIG_CASE_TRUE;
@@ -265,6 +268,20 @@ public class ExcelUtil {
             result = ExcelConstant.BIG_CASE_FALSE;
         }
         return result;
+    }
+
+    /**
+     * 替换单个 = 号，但不替换 == 或其他比较运算符
+     * @param input
+     * @return
+     */
+    public static String replaceEqualSign(String input) {
+        // 使用正则表达式匹配单个等号并排除 ">=", "<=", "==", "!=" 的情况
+        Pattern pattern = Pattern.compile("(?<![><!=])=(?![=])");
+        Matcher matcher = pattern.matcher(input);
+
+        // 将单个 "=" 替换为 "=="
+        return matcher.replaceAll("==");
     }
 
     /**
